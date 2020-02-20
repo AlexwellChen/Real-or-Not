@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report
 tweet = pd.read_csv('data\\train.csv')
 test = pd.read_csv('data\\test.csv')
 
-df = pd.concat([tweet,test]) # 连接两个数据进行清洗
+
 
 # Remove URL
 def remove_URL(text):
@@ -40,7 +40,36 @@ def remove_punct(text):
     table=str.maketrans('','',string.punctuation)
     return text.translate(table)
 
-df['text']=df['text'].apply(lambda x : remove_punct(x))
-df['text']=df['text'].apply(lambda x: remove_emoji(x))
-df['text']=df['text'].apply(lambda x : remove_html(x))
-df['text']=df['text'].apply(lambda x : remove_URL(x))
+tweet['text']=tweet['text'].apply(lambda x : remove_punct(x))
+tweet['text']=tweet['text'].apply(lambda x: remove_emoji(x))
+tweet['text']=tweet['text'].apply(lambda x : remove_html(x))
+tweet['text']=tweet['text'].apply(lambda x : remove_URL(x))
+
+test['text']=test['text'].apply(lambda x : remove_punct(x))
+test['text']=test['text'].apply(lambda x: remove_emoji(x))
+test['text']=test['text'].apply(lambda x : remove_html(x))
+test['text']=test['text'].apply(lambda x : remove_URL(x))
+
+#准备训练数据
+X_train = tweet["text"].tolist()
+y_train = tweet["target"].tolist()
+X_test = test["text"].tolist()
+
+
+# 采用TfidfVectorizer提取文本特征向量
+# 去除停用词
+tfid_stop_vec = TfidfVectorizer(analyzer='word', stop_words='english')
+x_tfid_stop_train = tfid_stop_vec.fit_transform(X_train)
+x_tfid_stop_test = tfid_stop_vec.transform(X_test)
+
+# 使用朴素贝叶斯分类器  分别对两种提取出来的特征值进行学习和预测
+
+mnb_tfid_stop = MultinomialNB()
+mnb_tfid_stop.fit(x_tfid_stop_train, y_train)   # 学习
+mnb_tfid_stop_y_predict = mnb_tfid_stop.predict(x_tfid_stop_test)    # 预测
+
+#提交数据
+submission = pd.read_csv('data\\sample_submission.csv')
+submission['target'] = mnb_tfid_stop_y_predict
+submission.to_csv('submission.csv',index=False)
+
