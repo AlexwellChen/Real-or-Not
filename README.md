@@ -1,1 +1,2 @@
-# Kaggle_Real-or-Not-
+# Real or Not?
+## A NLP entrance
