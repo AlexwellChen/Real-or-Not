@@ -3,13 +3,13 @@ import numpy as np
 import os
 import re
 import string
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
 
-tweet = pd.read_csv('data\\train.csv')
-test = pd.read_csv('data\\test.csv')
+tweet = pd.read_csv('data/train.csv')
+test = pd.read_csv('data/test.csv')
 
 
 
@@ -69,7 +69,7 @@ mnb_tfid_stop.fit(x_tfid_stop_train, y_train)   # 学习
 mnb_tfid_stop_y_predict = mnb_tfid_stop.predict(x_tfid_stop_test)    # 预测
 
 #提交数据
-submission = pd.read_csv('data\\sample_submission.csv')
+submission = pd.read_csv('data/sample_submission.csv')
 submission['target'] = mnb_tfid_stop_y_predict
-submission.to_csv('submission.csv',index=False)
+submission.to_csv('submission_2.csv',index=False)
 
